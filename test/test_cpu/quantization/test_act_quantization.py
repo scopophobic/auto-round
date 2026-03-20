@@ -9,14 +9,19 @@ from auto_round import AutoRound
 
 
 class TestAutoRoundAct:
-    @pytest.fixture(autouse=True)
-    def setup_save_dir(self, tmp_path):
-        self.save_dir = str(tmp_path / "saved")
-        yield
-        shutil.rmtree(self.save_dir, ignore_errors=True)
+    save_dir = "./saved"
 
-    @classmethod
-    def teardown_class(cls):
+    @pytest.fixture(autouse=True, scope="class")
+    def setup_and_teardown_class(self):
+        # ===== SETUP (setup_class) =====
+        print("[Setup] Running before any test in class")
+
+        # Yield to hand control to the test methods
+        yield
+
+        # ===== TEARDOWN (teardown_class) =====
+        print("[Teardown] Running after all tests in class")
+        shutil.rmtree("./saved", ignore_errors=True)
         shutil.rmtree("runs", ignore_errors=True)
 
     def test_mx_fp4(self, tiny_opt_model, opt_tokenizer, dataloader):
@@ -116,6 +121,7 @@ class TestAutoRoundAct:
         kproj_config = model.config.quantization_config.extra_config["model.decoder.layers.1.self_attn.k_proj"]
         assert "act_bits" in kproj_config.keys() and kproj_config["act_bits"] == 8
         assert "bits" in kproj_config.keys() and kproj_config["bits"] == 8
+        shutil.rmtree(quantized_model_path, ignore_errors=True)
 
     def test_act_config_NVFP4_saving(self, tiny_opt_model_path, dataloader):
         scheme = "NVFP4"
@@ -134,6 +140,7 @@ class TestAutoRoundAct:
         kproj_config = model.config.quantization_config.extra_config["model.decoder.layers.1.self_attn.k_proj"]
         assert "act_bits" in kproj_config.keys() and kproj_config["act_bits"] == 16
         assert "bits" in kproj_config.keys() and kproj_config["bits"] == 16
+        shutil.rmtree(quantized_model_path, ignore_errors=True)
 
     def test_WOQ_config_INT_saving(self, tiny_opt_model_path, dataloader):
         scheme = "W4A16"
@@ -155,6 +162,7 @@ class TestAutoRoundAct:
         # check inblock layer config values
         kproj_config = extra_config["model.decoder.layers.1.self_attn.k_proj"]
         assert "bits" in kproj_config.keys() and kproj_config["bits"] == 8
+        shutil.rmtree(quantized_model_path, ignore_errors=True)
 
     def test_act_config_FP8_saving(self, tiny_opt_model_path, dataloader):
         scheme = "FP8_STATIC"
@@ -188,3 +196,4 @@ class TestAutoRoundAct:
         kproj_config = extra_config["model.decoder.layers.0.self_attn.k_proj"]
         assert "act_bits" in kproj_config.keys() and kproj_config["act_bits"] == 16
         assert "group_size" in kproj_config.keys() and kproj_config["group_size"] == 0
+        shutil.rmtree(quantized_model_path, ignore_errors=True)

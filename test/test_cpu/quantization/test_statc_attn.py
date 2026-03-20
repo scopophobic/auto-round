@@ -20,7 +20,6 @@ def setup_deepseekv2():
     config = AutoConfig.from_pretrained(model_name, trust_remote_code=False)
     config.num_hidden_layers = 1  # Reduce layers for testing
     model = AutoModelForCausalLM.from_config(config)
-    model.config.name_or_path = None
     output_dir = "./tmp/test_quantized_deepseekv2"
     return model, tokenizer, output_dir, config
 
@@ -33,7 +32,6 @@ def setup_deepseekv3():
     config = AutoConfig.from_pretrained(model_name, trust_remote_code=False)
     config.num_hidden_layers = 1  # Reduce layers for testing
     model = AutoModelForCausalLM.from_config(config)
-    model.config.name_or_path = None
     output_dir = "./tmp/test_quantized_deepseekv3"
     return model, tokenizer, output_dir, config
 

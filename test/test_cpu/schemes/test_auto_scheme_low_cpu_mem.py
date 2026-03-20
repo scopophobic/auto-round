@@ -218,14 +218,12 @@ class TestAutoSchemeDataclassLowCpuMem:
 class TestAutoSchemeIntegration:
     """Integration tests for AutoScheme with low_cpu_mem_usage."""
 
-    @pytest.fixture(autouse=True)
-    def setup_save_dir(self, tmp_path):
-        self.save_dir = str(tmp_path / "saved")
-        yield
-        shutil.rmtree(self.save_dir, ignore_errors=True)
+    save_dir = "./saved"
 
-    @classmethod
-    def teardown_class(self):
+    @pytest.fixture(autouse=True, scope="class")
+    def setup_and_teardown_class(self):
+        yield
+        shutil.rmtree("./saved", ignore_errors=True)
         shutil.rmtree("runs", ignore_errors=True)
 
     def test_auto_scheme_with_low_cpu_mem_disabled(self, tiny_opt_model_path):

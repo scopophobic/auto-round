@@ -13,14 +13,13 @@ from ...helpers import gptj_name_or_path
 
 
 class TestAutoRound:
-    @pytest.fixture(autouse=True)
-    def _save_dir(self, tmp_path):
-        self.save_dir = str(tmp_path / "saved")
-        yield
-        shutil.rmtree(self.save_dir, ignore_errors=True)
+    @classmethod
+    def setup_class(self):
+        self.save_dir = "./saved"
 
     @classmethod
     def teardown_class(self):
+        shutil.rmtree(self.save_dir, ignore_errors=True)
         shutil.rmtree("runs", ignore_errors=True)
 
     def test_default_acc(self, dataloader):
@@ -69,3 +68,4 @@ class TestAutoRound:
         autoround = AutoRound(model_name, bits=bits, sym=sym, iters=0)
         autoround.quantize_and_save(self.save_dir, format="auto_round", inplace=False)
         model_args = f"pretrained={self.save_dir}"
+        shutil.rmtree(self.save_dir, ignore_errors=True)
