@@ -1153,7 +1153,8 @@ def get_common_prefix(paths):
 
 
 def unsupported_meta_device(model):
-    """Checks if the model is a valid model for auto_round.
+    """
+    Checks if the model is a valid model for auto_round.
 
     Args:
     model: The model to be checked.
